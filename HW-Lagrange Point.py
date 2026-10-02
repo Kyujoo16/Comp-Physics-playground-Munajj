@@ -17,7 +17,7 @@ def df(r):
     return -2*(G*M)/(r**3)-2*(G*m)/((R-r)**3)-(w**2)
 
 
-def r_roots(r_guess, tolerance=1e4, N=100):
+def r_roots(r_guess, tolerance=1e-4, N=100):
     r= r_guess
     for i in range(N):
         fr= f(r)
@@ -32,7 +32,7 @@ def r_roots(r_guess, tolerance=1e4, N=100):
 r_i = R*0.8
 L1_point = r_roots(r_i)
 
-print(f"The distance r form Earth to the L1 point is: {L1_point:,.4e}")
+print(f"The distance r form Earth to the L1 point is: {L1_point:,.4e} meters")
 
 r= np.linspace(R*0.05, R*0.95, 1000)
 f_vals = f(r)
