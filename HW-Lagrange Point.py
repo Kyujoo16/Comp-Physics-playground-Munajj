@@ -1,3 +1,4 @@
+import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from astropy import constants as const
@@ -29,20 +30,51 @@ def r_roots(r_guess, tolerance=1e-4, N=100):
     return r
 
 
-r_i = R*0.8
-L1_point = r_roots(r_i)
+def main():
 
-print(f"The distance r form Earth to the L1 point is: {L1_point:,.4e} meters")
+    parser = argparse.ArgumentParser(
+        description="Calculate and plot the L1 Lagrange point between the Earth and Moon using Newton's method.")
 
-r= np.linspace(R*0.05, R*0.95, 1000)
-f_vals = f(r)
-plt.figure(figsize=(10, 6))
-plt.plot(r, f_vals, color='purple', linestyle='solid', label='Net Force $f(r)$')
-plt.plot(L1_point, f(L1_point), 'bo', markersize=5, label=f'L1 Point ({L1_point:.4e} m)')
-plt.axhline(0, color='black', linestyle='--', linewidth=1)
-plt.title('Net Gravitational Force and L1 Lagrange Point', fontsize=10)
-plt.xlabel('Distance from Earth Center $r$ (meters)', fontsize=10)
-plt.ylabel('Net Force Metric $f(r)$', fontsize=10)
-plt.legend(fontsize=11)
-plt.show()
+    parser.add_argument(
+        '--guess',
+        type=float,
+        default=0.8,
+        help="Initial guess for the L1 point as a fraction of total distance R (default: 0.8)")
 
+    parser.add_argument(
+        '--tol',
+        type=float,
+        default=1e-4,
+        help="Convergence tolerance for the root finder (default: 1e-4)")
+
+    parser.add_argument(
+        '--max-iter',
+        type=int,
+        default=100,
+        help="Maximum number of Newton iterations (default: 100)")
+
+    args = parser.parse_parser_args() if 'parse_parser_args' in dir(parser) else parser.parse_args()
+
+    # Process arguments
+    r_i = R * args.guess
+    L1_point = r_roots(r_i, args.tol, args.max_iter)
+
+    print(f"Using initial guess: {r_i:,.4e} meters ({args.guess * 100}%% of R)")
+    print(f"The distance r from Earth to the L1 point is: {L1_point:,.4e}, meters")
+
+    r_vals = np.linspace(R*0.05, R*0.95, 1000)
+    f_vals = f(r_vals)
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(r_vals, f_vals, color='purple', linestyle='solid', label='Net Force $f(r)$')
+    plt.plot(L1_point, f(L1_point), 'bo', markersize=5, label=f'L1 Point ({L1_point:.4e} m)')
+    plt.axhline(0, color='black', linestyle='--', linewidth=1)
+    plt.title('Net Gravitational Force and L1 Lagrange Point', fontsize=10)
+    plt.xlabel('Distance from Earth Center $r$ (meters)', fontsize=10)
+    plt.ylabel('Net Force Metric $f(r)$', fontsize=10)
+    plt.legend(fontsize=11)
+    plt.show()
+
+
+if __name__ == "__main__":
+    main()
